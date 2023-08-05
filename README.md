@@ -8,3 +8,5 @@ This template needs the NUT-clients software installed in the server in charge o
 * Supported UPS: https://www.networkupstools.org/stable-hcl.html
 * RFC 9271 - Uninterruptible Power Supply (UPS) Management Protocol: https://www.ietf.org/rfc/rfc9271.pdf
 
+
+![dashboard](https://raw.githubusercontent.com/rafaelma/zabbix-template-ups-nut/master/zabbix-ups-nut-dashboard.png)
