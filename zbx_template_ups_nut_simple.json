@@ -1,0 +1,1085 @@
+{
+    "zabbix_export": {
+        "version": "6.2",
+        "date": "2023-08-05T20:27:23Z",
+        "template_groups": [
+            {
+                "uuid": "3dcd5bbe90534f9e8eb5c2d53756af63",
+                "name": "Templates/Power"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "a2b91c5a53ba4128a9a589b2ae381be5",
+                "template": "Template-UPS-NUT-simple",
+                "name": "Template-UPS-NUT-simple",
+                "groups": [
+                    {
+                        "name": "Templates/Power"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "3357e455c4764c049781be9b52df6e11",
+                        "name": "NUT output",
+                        "type": "ZABBIX_ACTIVE",
+                        "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]",
+                        "history": "1d",
+                        "trends": "0",
+                        "value_type": "TEXT",
+                        "preprocessing": [
+                            {
+                                "type": "STR_REPLACE",
+                                "parameters": [
+                                    ": ",
+                                    ":"
+                                ]
+                            }
+                        ],
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "9c2858b6201f4c54ae9d447fd237e2d8",
+                        "name": "UPS battery charge low",
+                        "type": "DEPENDENT",
+                        "key": "ups.battery.charge.low[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "battery\\.charge\\.low:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "6243b5ff9b14425cbb56cb6c0515b0c8",
+                        "name": "UPS battery charge warning",
+                        "type": "DEPENDENT",
+                        "key": "ups.battery.charge.warning[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "battery\\.charge\\.warning:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "8a1b08843b2c4f1f9a70eea008e4b600",
+                        "name": "UPS battery charge",
+                        "type": "DEPENDENT",
+                        "key": "ups.battery.charge[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "battery\\.charge:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "e2cd851f600e48caacd5232169bd71a5",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.battery.charge[{$UPS_NAME}])<{$UPS.CHARGE.CRITICAL.LIMIT}",
+                                "name": "[{$UPS_NAME}] The UPS CHARGE is less than {$UPS.CHARGE.CRITICAL.LIMIT}%",
+                                "priority": "HIGH",
+                                "description": "The UPS charge is less than {$UPS.CHARGE.CRITICAL.LIMIT}%",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "dc946a847e1e454aae0ff29aed5e29e3",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.battery.charge[{$UPS_NAME}])<{$UPS.CHARGE.WARNING.LIMIT}",
+                                "name": "[{$UPS_NAME}] The UPS CHARGE is less than {$UPS.CHARGE.WARNING.LIMIT}%",
+                                "priority": "WARNING",
+                                "description": "The UPS charge is less than {$UPS.CHARGE.WARNING.LIMIT}%",
+                                "manual_close": "YES",
+                                "dependencies": [
+                                    {
+                                        "name": "[{$UPS_NAME}] The UPS CHARGE is less than {$UPS.CHARGE.CRITICAL.LIMIT}%",
+                                        "expression": "last(/Template-UPS-NUT-simple/ups.battery.charge[{$UPS_NAME}])<{$UPS.CHARGE.CRITICAL.LIMIT}"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "964ef1c996b244fe892fb49e599846fd",
+                        "name": "UPS battery runtime low",
+                        "type": "DEPENDENT",
+                        "key": "ups.battery.runtime.low[{$UPS_NAME}]",
+                        "delay": "0",
+                        "units": "s",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "battery\\.runtime\\.low:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "793e6cb94b4c49c7a79acf1435637710",
+                        "name": "UPS battery runtime",
+                        "type": "DEPENDENT",
+                        "key": "ups.battery.runtime[{$UPS_NAME}]",
+                        "delay": "0",
+                        "units": "s",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "battery\\.runtime:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "307d6e0928b5472c86130ed05e0944ed",
+                        "name": "UPS battery voltage",
+                        "type": "DEPENDENT",
+                        "key": "ups.battery.voltage[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "V",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "battery\\.voltage:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fc191310763a41a692d65c89238d8758",
+                        "name": "UPS input voltage",
+                        "type": "DEPENDENT",
+                        "key": "ups.input.voltage[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "V",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "input\\.voltage:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "77ddcff1f7814219acc78fc78f3634e9",
+                        "name": "UPS Total kWh last 24H",
+                        "type": "CALCULATED",
+                        "key": "ups.kwh.last.day[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "kWh",
+                        "params": "last(//ups.output.watts.avg.last.day[{$UPS_NAME}])*24/1000",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "e02d94f0325a444eb0d271bdb7f1a931",
+                        "name": "UPS Total kWh last hour",
+                        "type": "CALCULATED",
+                        "key": "ups.kwh.last.hour[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "kWh",
+                        "params": "last(//ups.output.watts.avg.last.hour[{$UPS_NAME}])*1/1000",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "3f12d1b672284951930a97a7e9676bbf",
+                        "name": "UPS Average load last 24H",
+                        "type": "CALCULATED",
+                        "key": "ups.load.avg.last.day[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "params": "avg(//ups.load[{$UPS_NAME}],#1440)",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "951f4485c00c4d128642c0d6e695b0cb",
+                        "name": "UPS Average load last hour",
+                        "type": "CALCULATED",
+                        "key": "ups.load.avg.last.hour[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "params": "avg(//ups.load[{$UPS_NAME}],#60)",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "321ba71ede39425a99a4199b29795d0e",
+                        "name": "UPS load",
+                        "type": "DEPENDENT",
+                        "key": "ups.load[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "%",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "ups\\.load:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "7260c3b105f343dfabd90c8b69f5c709",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])<{$UPS.LOAD.CRITICAL.LIMIT}",
+                                "name": "[{$UPS_NAME}] The UPS LOAD is higher than {$UPS.LOAD.CRITICAL.LIMIT}%",
+                                "priority": "HIGH",
+                                "description": "The UPS load is higher than {$UPS.LOAD.CRITICAL.LIMIT}%",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "aa3ca74d578e4435a201b76c29430f18",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])<{$UPS.LOAD.WARNING.LIMIT}",
+                                "name": "[{$UPS_NAME}] The UPS LOAD is higher than {$UPS.LOAD.WARNING.LIMIT}%",
+                                "priority": "WARNING",
+                                "description": "The UPS load is higher than {$UPS.LOAD.WARNING.LIMIT}%",
+                                "manual_close": "YES",
+                                "dependencies": [
+                                    {
+                                        "name": "[{$UPS_NAME}] The UPS LOAD is higher than {$UPS.LOAD.CRITICAL.LIMIT}%",
+                                        "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])<{$UPS.LOAD.CRITICAL.LIMIT}"
+                                    }
+                                ],
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "1015920bfb3d49bda89fe21cb40f27e8",
+                        "name": "UPS output voltage",
+                        "type": "DEPENDENT",
+                        "key": "ups.output.voltage[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "V",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "output\\.voltage:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "7cff12858ae6468ba4ab3fd6cb142294",
+                        "name": "UPS Average output Watts last 24H",
+                        "type": "CALCULATED",
+                        "key": "ups.output.watts.avg.last.day[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "W",
+                        "params": "avg(//ups.output.watts[{$UPS_NAME}],#1440)",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "c2fbf9490aab49c8955c442ec5269262",
+                        "name": "UPS Average output Watts last hour",
+                        "type": "CALCULATED",
+                        "key": "ups.output.watts.avg.last.hour[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "W",
+                        "params": "avg(//ups.output.watts[{$UPS_NAME}],#60)",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "b027799558584df3931427b1afcac9e6",
+                        "name": "UPS output Watts",
+                        "type": "CALCULATED",
+                        "key": "ups.output.watts[{$UPS_NAME}]",
+                        "value_type": "FLOAT",
+                        "units": "W",
+                        "params": "last(//ups.realpower.nominal[{$UPS_NAME}])*last(//ups.load[{$UPS_NAME}])/100",
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "4e6e2d17be0145fe97751eeaaa6a19af",
+                        "name": "UPS realpower nominal",
+                        "type": "DEPENDENT",
+                        "key": "ups.realpower.nominal[{$UPS_NAME}]",
+                        "delay": "0",
+                        "value_type": "FLOAT",
+                        "units": "W",
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "ups\\.realpower\\.nominal:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            },
+                            {
+                                "type": "DISCARD_UNCHANGED_HEARTBEAT",
+                                "parameters": [
+                                    "86400"
+                                ]
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ]
+                    },
+                    {
+                        "uuid": "fbb38cd3665a47249390574ba91a8249",
+                        "name": "UPS status",
+                        "type": "DEPENDENT",
+                        "key": "ups.status[{$UPS_NAME}]",
+                        "delay": "0",
+                        "trends": "0",
+                        "value_type": "CHAR",
+                        "valuemap": {
+                            "name": "UPS status"
+                        },
+                        "preprocessing": [
+                            {
+                                "type": "REGEX",
+                                "parameters": [
+                                    "ups\\.status:([a-zA-Z0-9,.;:\\-\\+\\(\\) ]+)",
+                                    "\\1"
+                                ],
+                                "error_handler": "DISCARD_VALUE"
+                            }
+                        ],
+                        "master_item": {
+                            "key": "get.ups.nut.output[{$NUT_MASTER},{$UPS_NAME}]"
+                        },
+                        "tags": [
+                            {
+                                "tag": "component",
+                                "value": "power"
+                            }
+                        ],
+                        "triggers": [
+                            {
+                                "uuid": "c0ef5ea0bf2a417fb2ad4caebe6649c5",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.status[{$UPS_NAME}])=\"OB\" or last(/Template-UPS-NUT-simple/ups.status[{$UPS_NAME}])=\"OB DISCHRG\"",
+                                "name": "[{$UPS_NAME}] The UPS reports that is On Battery and Discharging",
+                                "priority": "HIGH",
+                                "description": "UPS status = OB or OB DISCHRG\nOn Battery. The UPS is taking energy from its battery. The battery is discharging.",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "e001c198b1e84b8faccf8c14466ef458",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.status[{$UPS_NAME}])=\"OL CHRG\"",
+                                "name": "[{$UPS_NAME}] The UPS reports that is On Line and charging the battery",
+                                "priority": "WARNING",
+                                "description": "UPS status = OL CHRG\nOn Line. The UPS is charging the battery",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            },
+                            {
+                                "uuid": "62c34c77114e4848be2c9d5a5c7de440",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.status[{$UPS_NAME}])=\"RB\"",
+                                "name": "[{$UPS_NAME}] The UPS reports that the battery should be replaced",
+                                "priority": "HIGH",
+                                "description": "UPS status = RB \nReplace battery. The UPS reports that its battery or batteries should be replaced.",
+                                "manual_close": "YES",
+                                "tags": [
+                                    {
+                                        "tag": "component",
+                                        "value": "power"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "tags": [
+                    {
+                        "tag": "class",
+                        "value": "power"
+                    },
+                    {
+                        "tag": "target",
+                        "value": "nut-ups"
+                    }
+                ],
+                "macros": [
+                    {
+                        "macro": "{$NUT_MASTER}",
+                        "value": "127.0.0.1",
+                        "description": "NUT master server"
+                    },
+                    {
+                        "macro": "{$UPS.CHARGE.CRITICAL.LIMIT}",
+                        "value": "80",
+                        "description": "UPS charge critical limit"
+                    },
+                    {
+                        "macro": "{$UPS.CHARGE.WARNING.LIMIT}",
+                        "value": "50",
+                        "description": "UPS charge warning limit"
+                    },
+                    {
+                        "macro": "{$UPS.LOAD.CRITICAL.LIMIT}",
+                        "value": "90",
+                        "description": "UPS load critical limit"
+                    },
+                    {
+                        "macro": "{$UPS.LOAD.WARNING.LIMIT}",
+                        "value": "80",
+                        "description": "UPS load warning limit"
+                    },
+                    {
+                        "macro": "{$UPS_NAME}",
+                        "value": "ups-name",
+                        "description": "UPS name"
+                    }
+                ],
+                "dashboards": [
+                    {
+                        "uuid": "cd31cc8daf1c455e8aabced6f4b69f94",
+                        "name": "UPS dashboard",
+                        "display_period": "60",
+                        "pages": [
+                            {
+                                "widgets": [
+                                    {
+                                        "type": "ITEM",
+                                        "x": "9",
+                                        "y": "9",
+                                        "width": "3",
+                                        "height": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.battery.runtime[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "10",
+                                        "y": "7",
+                                        "width": "2",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.realpower.nominal[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "width": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "adv_conf",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.load.avg.last.hour[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "3",
+                                        "width": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.load.avg.last.day[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "6",
+                                        "width": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.output.watts.avg.last.hour[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "9",
+                                        "width": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.output.watts.avg.last.day[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "12",
+                                        "width": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.kwh.last.hour[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "15",
+                                        "width": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.kwh.last.day[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "6",
+                                        "y": "7",
+                                        "width": "2",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.battery.charge[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "x": "8",
+                                        "y": "7",
+                                        "width": "2",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.output.voltage[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "y": "7",
+                                        "width": "6",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "name": "UPS battery runtime"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "y": "2",
+                                        "width": "6",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "name": "UPS Load"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "x": "6",
+                                        "y": "2",
+                                        "width": "6",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "name": "UPS output Watts"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "x": "12",
+                                        "y": "2",
+                                        "width": "6",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "name": "UPS total kWh last hour"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "GRAPH_CLASSIC",
+                                        "x": "12",
+                                        "y": "7",
+                                        "width": "6",
+                                        "height": "5",
+                                        "fields": [
+                                            {
+                                                "type": "GRAPH",
+                                                "name": "graphid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "name": "UPS total kWh last 24H"
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "type": "ITEM",
+                                        "name": "UPS Status",
+                                        "x": "6",
+                                        "y": "9",
+                                        "width": "3",
+                                        "height": "3",
+                                        "hide_header": "YES",
+                                        "fields": [
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "adv_conf",
+                                                "value": "1"
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "decimal_size",
+                                                "value": "25"
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "value_size",
+                                                "value": "25"
+                                            },
+                                            {
+                                                "type": "INTEGER",
+                                                "name": "units_size",
+                                                "value": "25"
+                                            },
+                                            {
+                                                "type": "ITEM",
+                                                "name": "itemid",
+                                                "value": {
+                                                    "host": "Template-UPS-NUT-simple",
+                                                    "key": "ups.status[{$UPS_NAME}]"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "valuemaps": [
+                    {
+                        "uuid": "accd6e96fe3841328333a929bf110976",
+                        "name": "UPS status",
+                        "mappings": [
+                            {
+                                "value": "ALARM",
+                                "newvalue": "UPS requires intervention"
+                            },
+                            {
+                                "value": "BOOST",
+                                "newvalue": "Boosting voltage"
+                            },
+                            {
+                                "value": "BYPASS",
+                                "newvalue": "Bypassing battery"
+                            },
+                            {
+                                "value": "CAL",
+                                "newvalue": "Calibrating"
+                            },
+                            {
+                                "value": "CHRG",
+                                "newvalue": "Battery is charging"
+                            },
+                            {
+                                "value": "COMM",
+                                "newvalue": "Attachment Daemon has contact"
+                            },
+                            {
+                                "value": "DISCHRG",
+                                "newvalue": "Battery is discharging"
+                            },
+                            {
+                                "value": "FSD",
+                                "newvalue": "Forced Shutdown"
+                            },
+                            {
+                                "value": "LB",
+                                "newvalue": "Low Battery"
+                            },
+                            {
+                                "value": "NOCOMM",
+                                "newvalue": "Attachment Daemon has no contact"
+                            },
+                            {
+                                "value": "OB",
+                                "newvalue": "On Battery"
+                            },
+                            {
+                                "value": "OFF",
+                                "newvalue": "Off"
+                            },
+                            {
+                                "value": "OL",
+                                "newvalue": "OnLine"
+                            },
+                            {
+                                "value": "OVER",
+                                "newvalue": "Overloaded"
+                            },
+                            {
+                                "value": "RB",
+                                "newvalue": "Replace battery"
+                            },
+                            {
+                                "value": "TEST",
+                                "newvalue": "Under test"
+                            },
+                            {
+                                "value": "TRIM",
+                                "newvalue": "Reducing voltage"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "graphs": [
+            {
+                "uuid": "1296eabbbb2c4792b619b3a0541c4c17",
+                "name": "UPS battery runtime",
+                "graph_items": [
+                    {
+                        "drawtype": "GRADIENT_LINE",
+                        "color": "9CCC65",
+                        "calc_fnc": "ALL",
+                        "item": {
+                            "host": "Template-UPS-NUT-simple",
+                            "key": "ups.battery.runtime[{$UPS_NAME}]"
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "e4ee49c75c3844fcbf6c9656413cddf9",
+                "name": "UPS Load",
+                "graph_items": [
+                    {
+                        "drawtype": "GRADIENT_LINE",
+                        "color": "FFA000",
+                        "calc_fnc": "ALL",
+                        "item": {
+                            "host": "Template-UPS-NUT-simple",
+                            "key": "ups.load[{$UPS_NAME}]"
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "530844f9b90f44a0964f0ae6b82b35f4",
+                "name": "UPS output Watts",
+                "graph_items": [
+                    {
+                        "drawtype": "GRADIENT_LINE",
+                        "color": "FF5722",
+                        "calc_fnc": "ALL",
+                        "item": {
+                            "host": "Template-UPS-NUT-simple",
+                            "key": "ups.output.watts[{$UPS_NAME}]"
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "7eb3697365e7488d8040ca9f21c12a14",
+                "name": "UPS total kWh last 24H",
+                "graph_items": [
+                    {
+                        "drawtype": "GRADIENT_LINE",
+                        "color": "8E24AA",
+                        "calc_fnc": "ALL",
+                        "item": {
+                            "host": "Template-UPS-NUT-simple",
+                            "key": "ups.kwh.last.day[{$UPS_NAME}]"
+                        }
+                    }
+                ]
+            },
+            {
+                "uuid": "25e28ba8a82a4b5d9b67f91836e6269c",
+                "name": "UPS total kWh last hour",
+                "graph_items": [
+                    {
+                        "drawtype": "GRADIENT_LINE",
+                        "color": "BA68C8",
+                        "calc_fnc": "ALL",
+                        "item": {
+                            "host": "Template-UPS-NUT-simple",
+                            "key": "ups.kwh.last.hour[{$UPS_NAME}]"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}
