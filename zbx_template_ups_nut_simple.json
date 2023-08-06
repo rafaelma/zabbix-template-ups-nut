@@ -1,7 +1,7 @@
 {
     "zabbix_export": {
         "version": "6.2",
-        "date": "2023-08-05T20:27:23Z",
+        "date": "2023-08-06T14:02:37Z",
         "template_groups": [
             {
                 "uuid": "3dcd5bbe90534f9e8eb5c2d53756af63",
@@ -363,7 +363,7 @@
                         "triggers": [
                             {
                                 "uuid": "7260c3b105f343dfabd90c8b69f5c709",
-                                "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])<{$UPS.LOAD.CRITICAL.LIMIT}",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])>{$UPS.LOAD.CRITICAL.LIMIT}",
                                 "name": "[{$UPS_NAME}] The UPS LOAD is higher than {$UPS.LOAD.CRITICAL.LIMIT}%",
                                 "priority": "HIGH",
                                 "description": "The UPS load is higher than {$UPS.LOAD.CRITICAL.LIMIT}%",
@@ -377,7 +377,7 @@
                             },
                             {
                                 "uuid": "aa3ca74d578e4435a201b76c29430f18",
-                                "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])<{$UPS.LOAD.WARNING.LIMIT}",
+                                "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])>{$UPS.LOAD.WARNING.LIMIT}",
                                 "name": "[{$UPS_NAME}] The UPS LOAD is higher than {$UPS.LOAD.WARNING.LIMIT}%",
                                 "priority": "WARNING",
                                 "description": "The UPS load is higher than {$UPS.LOAD.WARNING.LIMIT}%",
@@ -385,7 +385,7 @@
                                 "dependencies": [
                                     {
                                         "name": "[{$UPS_NAME}] The UPS LOAD is higher than {$UPS.LOAD.CRITICAL.LIMIT}%",
-                                        "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])<{$UPS.LOAD.CRITICAL.LIMIT}"
+                                        "expression": "last(/Template-UPS-NUT-simple/ups.load[{$UPS_NAME}])>{$UPS.LOAD.CRITICAL.LIMIT}"
                                     }
                                 ],
                                 "tags": [
@@ -540,7 +540,7 @@
                                 "expression": "last(/Template-UPS-NUT-simple/ups.status[{$UPS_NAME}])=\"OB\" or last(/Template-UPS-NUT-simple/ups.status[{$UPS_NAME}])=\"OB DISCHRG\"",
                                 "name": "[{$UPS_NAME}] The UPS reports that is On Battery and Discharging",
                                 "priority": "HIGH",
-                                "description": "UPS status = OB or OB DISCHRG\nOn Battery. The UPS is taking energy from its battery. The battery is discharging.",
+                                "description": "UPS status = OB or OB DISCHRG\nOn Battery. The UPS is using energy from its battery. The battery is discharging.",
                                 "manual_close": "YES",
                                 "tags": [
                                     {
@@ -598,12 +598,12 @@
                     },
                     {
                         "macro": "{$UPS.CHARGE.CRITICAL.LIMIT}",
-                        "value": "80",
+                        "value": "50",
                         "description": "UPS charge critical limit"
                     },
                     {
                         "macro": "{$UPS.CHARGE.WARNING.LIMIT}",
-                        "value": "50",
+                        "value": "80",
                         "description": "UPS charge warning limit"
                     },
                     {
